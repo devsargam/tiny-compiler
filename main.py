@@ -1,18 +1,25 @@
+from imaplib import ParseFlags
 from constants import EOF
 from lex import Lexer
+import sys
+
+from parse import Parser
 
 
 def main():
-    source = '+ -*/ = == != <= >= "Sargam Poudel" < > 123 123.45   \n'
-    source = "+-123 9.8654*/"
-    source = "F+-123 foo*THEN/"
+    print("smol compiler")
+
+    if len(sys.argv) != 2:
+        sys.exit("Error: Compiler needs source file as argument")
+
+    with open(sys.argv[1], "r") as file:
+        source = file.read()
+
     lexer = Lexer(source)
+    parser = Parser(lexer)
 
-    token = lexer.get_token()
-
-    while lexer.peek() != EOF:
-        print(token.kind)
-        token = lexer.get_token()
+    parser.program()
+    print("Parsing Complete")
 
 
 if __name__ == "__main__":
