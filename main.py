@@ -1,5 +1,6 @@
 from imaplib import ParseFlags
 from constants import EOF
+from emit import Emitter
 from lex import Lexer
 import sys
 
@@ -16,9 +17,11 @@ def main():
         source = file.read()
 
     lexer = Lexer(source)
-    parser = Parser(lexer)
+    emitter = Emitter("out.c")
+    parser = Parser(lexer, emitter)
 
     parser.program()
+    emitter.write_file()
     print("Parsing Complete")
 
 

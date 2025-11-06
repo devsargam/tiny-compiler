@@ -1,10 +1,13 @@
 import sys
+from emit import Emitter
 from lex import Lexer, Token, TokenType
 
 
 class Parser:
-    def __init__(self, lexer: Lexer) -> None:
+    def __init__(self, lexer: Lexer, emitter: Emitter) -> None:
         self.lexer: Lexer = lexer
+        self.emitter: Emitter = emitter
+
         self.symbols = set()
         self.labels_declared = set()
         self.labels_gotoed = set()
@@ -33,12 +36,17 @@ class Parser:
     # program ::= {statement}
     def program(self):
         print("PROGRAM")
+        self.emitter.header_line("#include <stdio.h>")
+        self.emitter.header_line("int main(void) {")
 
         while self.check_token(TokenType.NEWLINE):
             self.next_token()
 
         while not self.check_token(TokenType.EOF):
             self.statement()
+
+        self.emitter.emit_line("return 0;")
+        self.emitter.emit_line("}")
 
         for label in self.labels_declared:
             if label not in self.labels_declared:
